@@ -29,7 +29,14 @@ window.onload = () => {
 	root.appendChild(nav);
 	root.appendChild(section);
 
-	console.log(window.location.href);
+	const url = new URL(window.location.href);
+	const id = url.searchParams.get("id");
+	const hash = url.hash;
+	if (id) {
+		if (hash === '#preview') {
+			bookPreview(id);
+		}
+	}
 }
 /// create nav item
 function createItemBookList (name, id) {
