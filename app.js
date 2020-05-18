@@ -1,3 +1,4 @@
+/// first add event listener
 window.addEventListener('popstate', (e) => {
 	if (e.state) {
 		bookPreview(e.state.id);
@@ -5,7 +6,7 @@ window.addEventListener('popstate', (e) => {
 		bookPreview(e.detail.id);
 	}
 });
-
+/// execute code after the page has been loaded
 window.onload = () => {
 	const root = document.getElementById('root');
 	const books = JSON.parse(window.localStorage.getItem('booksList'));
@@ -30,7 +31,7 @@ window.onload = () => {
 
 	console.log(window.location.href);
 }
-
+/// create nav item
 function createItemBookList (name, id) {
 	const item = document.createElement('div')
 	item.setAttribute('class', 'listItem');
@@ -51,7 +52,7 @@ function createItemBookList (name, id) {
 
 	return item;
 }
-
+/// change URL bar after a link click
 function clickLink(e) {
 	e.preventDefault();
 	const url = new URL(window.location.href);
@@ -60,7 +61,7 @@ function clickLink(e) {
 	window.history.pushState({'id': this.id}, '', newHref);
 	window.dispatchEvent(new CustomEvent('popstate', {'detail': {'id': this.id}}));
 }
-
+/// clear section and create new elements
 function bookPreview(id) {
 	const idToNumber = Number(id);
 	const section = document.querySelectorAll('.section')[0];
@@ -72,7 +73,7 @@ function bookPreview(id) {
 	section.appendChild(createBookBlock(book));
 
 }
-
+/// create book block with all necessary data
 function createBookBlock (book) {
 	const container = document.createElement('div');
 	container.setAttribute('class', 'bookContainer');
