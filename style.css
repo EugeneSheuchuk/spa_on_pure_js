@@ -1,0 +1,47 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+body {
+    width: 100vw;
+    height: 100vh;
+    padding: 30px 20px 0 20px;
+}
+#root {
+    width: 1280px;
+    min-height: 300px;
+    margin: 0 auto;
+    display: flex;
+}
+.nav {
+    width: 30%;
+    min-height: 100px;
+    border-right: 1px solid black;
+}
+.nav > h3 {
+    display: block;
+    width: 100%;
+    text-align: center;
+}
+.listItem {
+    margin-bottom: 10px;
+    position: relative;
+}
+.listItem div {
+    width: 80%;
+}
+.listItem button {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translate(-50%, -50%);
+}
+
+
+
+
+.section {
+    width: 69%;
+}
