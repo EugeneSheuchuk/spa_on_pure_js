@@ -73,13 +73,13 @@ function createBookBlock (book) {
 	container.setAttribute('class', 'bookContainer');
 	const bookName = document.createElement('p');
 	bookName.setAttribute('class', 'bookName');
-	bookName.innerHTML = `<b>Book name:<b> ` + book.name;
+	bookName.innerHTML = `<b>Book name:</b> ` + book.name;
 	const author = document.createElement('p');
 	author.setAttribute('class', 'bookAuthor');
-	author.innerHTML = `<b>Book author:<b> ` + book.author;
+	author.innerHTML = `<b>Book author:</b> ` + book.author;
 	const plot = document.createElement('p');
 	plot.setAttribute('class', 'bookPlot');
-	plot.innerHTML = `<b>Book plot:<b> ` + book.plot;
+	plot.innerHTML = `<b>Book plot:</b> ` + book.plot;
 	const img = document.createElement('img');
 	img.setAttribute('src', `${book.image}`);
 	container.appendChild(bookName);
