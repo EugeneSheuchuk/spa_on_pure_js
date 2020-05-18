@@ -1,6 +1,9 @@
 window.addEventListener('popstate', (e) => {
-	console.log('popstate event ', e.detail.id);
-	bookPreview(e.detail.id);
+	if (e.state) {
+		bookPreview(e.state.id);
+	} else {
+		bookPreview(e.detail.id);
+	}
 });
 
 window.onload = () => {
@@ -24,6 +27,8 @@ window.onload = () => {
 
 	root.appendChild(nav);
 	root.appendChild(section);
+
+	console.log(window.location.href);
 }
 
 function createItemBookList (name, id) {
@@ -52,7 +57,7 @@ function clickLink(e) {
 	const url = new URL(window.location.href);
 	const baseUrl = url.href.slice(0, url.href.indexOf('.html')) + '.html';
 	const newHref = baseUrl	 + `?id=${this.id}#preview`;
-	window.history.pushState({}, '', newHref);
+	window.history.pushState({'id': this.id}, '', newHref);
 	window.dispatchEvent(new CustomEvent('popstate', {'detail': {'id': this.id}}));
 }
 
