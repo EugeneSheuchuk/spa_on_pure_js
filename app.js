@@ -169,7 +169,7 @@ function newBookPreview() {
 	const saveNewBook = () => {
 		const book = collectBookData();
 		const books = JSON.parse(window.localStorage.getItem('booksList'));
-		const id = Number(String(books.length +1).repeat(5));
+		const id = books.length + 1;
 		book.id = id;
 		books.push(book);
 		localStorage.setItem('booksList',JSON.stringify(books));
@@ -340,12 +340,13 @@ function isCorrectURL() {
 		const subStr = stringURL.slice(stringURL.indexOf('.html') + 5);
 		return subStr.length === 4;
 	} else if (hashes.includes(hash) && hash !== '#add' && checkBookId(id)) {
+		const strIdLength = String(id).length;
 		const stringURL = window.location.href;
 		const subStr = stringURL.slice(stringURL.indexOf('.html') + 5);
 		if (hash === '#edit'){
-			return subStr.length === 14;
+			return subStr.length === 9 + strIdLength;
 		} else if (hash === '#preview') {
-			return subStr.length === 17;
+			return subStr.length === 12 + strIdLength;
 		}
 	} else return false;
 }
