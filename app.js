@@ -43,6 +43,16 @@ window.onload = () => {
 		nav.appendChild(link);
 	})
 
+	const addBookButton = document.createElement('input');
+	addBookButton.setAttribute('type', 'button');
+	addBookButton.setAttribute('value', 'Add new book');
+	addBookButton.addEventListener('click', () => {
+		const url = window.location.href;
+		window.location.href = url.slice(0, url.indexOf('.html')) + '.html#add';
+	});
+
+	nav.appendChild(addBookButton);
+
 	root.appendChild(nav);
 	root.appendChild(section);
 
