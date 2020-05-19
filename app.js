@@ -1,9 +1,17 @@
+const hashes = ['#add', '#preview', '#edit'];
+
 /// first add event listener
 window.addEventListener('popstate', (e) => {
+	console.log('Listener');
+	const url = new URL(window.location.href);
+	const id = url.searchParams.get("id");
+	const hash = url.hash;
+	const checkResult = isCorrectURL();
+	if(!checkResult) {
+		renderStartPage();
+		return;
+	}
 	if (e.state === null) { /// this case work when manually change hash in the loaded page
-		const url = new URL(window.location.href);
-		const id = url.searchParams.get("id");
-		const hash = url.hash;
 		bookPreview(id, hash.slice(1));
 	} else if (e.state) {
 		bookPreview(e.state.id, e.state.action);
@@ -37,6 +45,13 @@ window.onload = () => {
 	const url = new URL(window.location.href);
 	const id = url.searchParams.get("id");
 	const hash = url.hash;
+	console.log('Onload');
+	const checkResult = isCorrectURL();
+	if(!checkResult) {
+		renderStartPage();
+		return;
+	}
+
 	if (id) {
 		if (hash === '#preview') {
 			bookPreview(id, 'preview');
@@ -216,4 +231,40 @@ function collectBookData() {
 	const image = document.getElementById('image').children[1].value;
 	const plot = document.getElementById('plot').children[1].value;
 	return {name, author, image, plot};
+}
+
+function checkBookId(bookId) {
+	const books = JSON.parse(window.localStorage.getItem('booksList'));
+	return books.some(el => el.id === Number(bookId));
+}
+
+function renderStartPage() {
+	const url = window.location.href;
+	window.location.href = url.slice(0, url.indexOf('.html')) + '.html';
+	// const baseURL = url.slice(0, url.indexOf('.html')) + '.html';
+	// window.history.pushState({}, '', baseURL);
+	// window.dispatchEvent(new CustomEvent('popstate'));
+}
+
+function isCorrectURL() {
+	const url = new URL(window.location.href);
+	const id = url.searchParams.get("id");
+	const hash = url.hash;
+	if(id === null && hash === '') {
+		return true;
+	} else if (!hashes.includes(hash)) {
+		return false;
+	} else if (hash === '#add') {
+		const stringURL = window.location.href;
+		const subStr = stringURL.slice(stringURL.indexOf('.html') + 5);
+		return subStr.length === 4;
+	} else if (hashes.includes(hash) && hash !== '#add' && checkBookId(id)) {
+		const stringURL = window.location.href;
+		const subStr = stringURL.slice(stringURL.indexOf('.html') + 5);
+		if (hash === '#edit'){
+			return subStr.length === 14;
+		} else if (hash === '#preview') {
+			return subStr.length === 17;
+		}
+	} else return false;
 }
