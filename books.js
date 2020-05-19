@@ -25,4 +25,8 @@ const books =[
       'a candidate and as an interviewer.'
   }
 ];
-localStorage.setItem('booksList',JSON.stringify(books));
+const isFirstBoot = JSON.parse(window.localStorage.getItem('firstBoot'));
+if (!isFirstBoot) {
+  localStorage.setItem('firstBoot',JSON.stringify(true));
+  localStorage.setItem('booksList',JSON.stringify(books));
+}
