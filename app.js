@@ -11,12 +11,16 @@ window.addEventListener('popstate', (e) => {
 		renderStartPage();
 		return;
 	}
-	if (e.state === null) { /// this case work when manually change hash in the loaded page
-		bookPreview(id, hash.slice(1));
-	} else if (e.state) {
-		bookPreview(e.state.id, e.state.action);
+	if (hash === '#add') {
+		newBookPreview();
 	} else {
-		bookPreview(e.detail.id, e.detail.action);
+		if (e.state === null) { /// this case work when manually change hash in the loaded page
+			bookPreview(id, hash.slice(1));
+		} else if (e.state) {
+			bookPreview(e.state.id, e.state.action);
+		} else {
+			bookPreview(e.detail.id, e.detail.action);
+		}
 	}
 });
 /// execute code after the page has been loaded
@@ -51,14 +55,18 @@ window.onload = () => {
 		renderStartPage();
 		return;
 	}
-
-	if (id) {
-		if (hash === '#preview') {
-			bookPreview(id, 'preview');
-		} else if (hash === '#edit') {
-			bookPreview(id, 'edit');
+	if (hash === '#add') {
+		newBookPreview();
+	} else {
+		if (id) {
+			if (hash === '#preview') {
+				bookPreview(id, 'preview');
+			} else if (hash === '#edit') {
+				bookPreview(id, 'edit');
+			}
 		}
 	}
+
 }
 /// create nav item
 function createItemBookList (name, id) {
@@ -109,6 +117,81 @@ function bookPreview(id, action) {
 		section.appendChild(editBookBlock(book));
 	}
 }
+function newBookPreview() {
+	const section = document.querySelectorAll('.section')[0];
+	section.innerHTML = '';
+	const header = document.createElement('h3');
+	header.innerText = 'Add new book!';
+	section.appendChild(header);
+
+	const container = document.createElement('form');
+	container.setAttribute('class', 'newBookContainer');
+	const name = createFormInput('Book name', '');
+	name.setAttribute('id','name');
+	const author = createFormInput('Book author', '');
+	author.setAttribute('id', 'author');
+	const image = createFormInput('Book image address', '');
+	image.setAttribute('id', 'image');
+	const plot = createFormInput('Book plot', '');
+	plot.setAttribute('id', 'plot');
+	container.appendChild(name);
+	container.appendChild(author);
+	container.appendChild(image);
+	container.appendChild(plot);
+
+	const submit = document.createElement('input');
+	submit.setAttribute('type', 'submit');
+	submit.setAttribute('value', 'Save');
+	container.appendChild(submit);
+
+	const cancel = document.createElement('input');
+	cancel.setAttribute('type', 'button');
+	cancel.setAttribute('value', 'Cancel');
+	cancel.addEventListener('click', (e) => {
+		e.preventDefault();
+		const result = confirm('Discard changes?');
+		if (result) {
+			const url = new URL(window.location.href);
+			const newHref = url.href.slice(0, url.href.indexOf('#')) + '#preview';
+			const id = url.searchParams.get("id");
+			window.history.pushState({'id': id, 'action': 'preview'}, '', newHref);
+			window.dispatchEvent(new CustomEvent('popstate', {'detail': {'id': id, 'action': 'preview'}}));
+		}
+	});
+	container.appendChild(cancel);
+
+	const saveBookData = () => {
+		const book = collectBookData();
+		book.id = Number(bookId);
+		const books = JSON.parse(window.localStorage.getItem('booksList'));
+		const newBooks = books.map(elem => {
+			if (elem.id === bookId) return book;
+			return elem;
+		})
+		localStorage.setItem('booksList',JSON.stringify(newBooks));
+		setTimeout(() => {
+			alert('Book successfully updated');
+			const url = new URL(window.location.href);
+			const newHref = url.href.slice(0, url.href.indexOf('#')) + '#preview';
+			const id = url.searchParams.get("id");
+			window.history.pushState({'id': id, 'action': 'preview'}, '', newHref);
+			window.dispatchEvent(new CustomEvent('popstate', {'detail': {'id': id, 'action': 'preview'}}));
+		}, 300);
+	};
+
+	container.addEventListener('submit', (e) => {
+		e.preventDefault();
+		if (checkBookData(e.target)) {
+			alert('Field(s) can not be empty!!!');
+			return;
+		}
+		saveBookData();
+	});
+	section.appendChild(container);
+}
+
+
+
 /// create book block with all necessary data
 function createBookBlock (book) {
 	const container = document.createElement('div');
