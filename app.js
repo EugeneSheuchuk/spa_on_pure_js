@@ -41,7 +41,6 @@ window.onload = () => {
 		if (hash === '#preview') {
 			bookPreview(id, 'preview');
 		} else if (hash === '#edit') {
-			console.log('edit');
 			bookPreview(id, 'edit');
 		}
 	}
@@ -83,6 +82,7 @@ function bookPreview(id, action) {
 	const section = document.querySelectorAll('.section')[0];
 	section.innerHTML = '';
 	const header = document.createElement('h3');
+	const books = JSON.parse(window.localStorage.getItem('booksList'));
 	const book = books.find((elem) => elem.id === idToNumber);
 	if (action === 'preview') {
 		header.innerText = 'Book preview!';
@@ -127,22 +127,52 @@ function editBookOnLink(e) {
 }
 
 function editBookBlock (book) {
+	const bookId = book.id;
 	const container = document.createElement('form');
 	container.setAttribute('class', 'editBookContainer');
 	const name = createFormInput('Book name', book.name);
+	name.setAttribute('id','name');
 	const author = createFormInput('Book author', book.author);
+	author.setAttribute('id', 'author');
 	const image = createFormInput('Book image address', book.image);
+	image.setAttribute('id', 'image');
 	const plot = createFormInput('Book plot', book.plot);
+	plot.setAttribute('id', 'plot');
 	container.appendChild(name);
 	container.appendChild(author);
 	container.appendChild(image);
 	container.appendChild(plot);
 	const submit = document.createElement('input');
 	submit.setAttribute('type', 'submit');
+	submit.setAttribute('value', 'Save');
 	container.appendChild(submit);
+
+	const saveBookData = () => {
+		const book = collectBookData();
+		book.id = Number(bookId);
+		const books = JSON.parse(window.localStorage.getItem('booksList'));
+		const newBooks = books.map(elem => {
+			if (elem.id === bookId) return book;
+			return elem;
+		})
+		localStorage.setItem('booksList',JSON.stringify(newBooks));
+		setTimeout(() => {
+			alert('Book successfully updated');
+			const url = new URL(window.location.href);
+			const newHref = url.href.slice(0, url.href.indexOf('#')) + '#preview';
+			const id = url.searchParams.get("id");
+			window.history.pushState({'id': id, 'action': 'preview'}, '', newHref);
+			window.dispatchEvent(new CustomEvent('popstate', {'detail': {'id': id, 'action': 'preview'}}));
+		}, 300);
+	};
+
 	container.addEventListener('submit', (e) => {
 		e.preventDefault();
-		console.log('submit ', e);
+		if (checkBookData(e.target)) {
+			alert('Field(s) can not be empty!!!');
+			return;
+		}
+		saveBookData();
 	});
 	return container;
 }
@@ -156,4 +186,17 @@ function createFormInput (name, value) {
 	input.setAttribute('value', value);
 	block.appendChild(input);
 	return block;
+}
+
+function checkBookData(data) {
+	const bookFields = [...data];
+	return bookFields.some(elem => elem.defaultValue === '');
+}
+
+function collectBookData() {
+	const name = document.getElementById('name').children[1].value;
+	const author = document.getElementById('author').children[1].value;
+	const image = document.getElementById('image').children[1].value;
+	const plot = document.getElementById('plot').children[1].value;
+	return {name, author, image, plot};
 }
