@@ -151,31 +151,22 @@ function newBookPreview() {
 		e.preventDefault();
 		const result = confirm('Discard changes?');
 		if (result) {
-			const url = new URL(window.location.href);
-			const newHref = url.href.slice(0, url.href.indexOf('#')) + '#preview';
-			const id = url.searchParams.get("id");
-			window.history.pushState({'id': id, 'action': 'preview'}, '', newHref);
-			window.dispatchEvent(new CustomEvent('popstate', {'detail': {'id': id, 'action': 'preview'}}));
+			window.history.back();
 		}
 	});
 	container.appendChild(cancel);
 
-	const saveBookData = () => {
+	const saveNewBook = () => {
 		const book = collectBookData();
-		book.id = Number(bookId);
 		const books = JSON.parse(window.localStorage.getItem('booksList'));
-		const newBooks = books.map(elem => {
-			if (elem.id === bookId) return book;
-			return elem;
-		})
-		localStorage.setItem('booksList',JSON.stringify(newBooks));
+		const id = Number(String(books.length +1).repeat(5));
+		book.id = id;
+		books.push(book);
+		localStorage.setItem('booksList',JSON.stringify(books));
 		setTimeout(() => {
-			alert('Book successfully updated');
-			const url = new URL(window.location.href);
-			const newHref = url.href.slice(0, url.href.indexOf('#')) + '#preview';
-			const id = url.searchParams.get("id");
-			window.history.pushState({'id': id, 'action': 'preview'}, '', newHref);
-			window.dispatchEvent(new CustomEvent('popstate', {'detail': {'id': id, 'action': 'preview'}}));
+			alert('Book successfully saved');
+			const url = window.location.href.slice(0, window.location.href.indexOf('#'));
+			window.location.href = url + `?id=${id}` + '#preview';
 		}, 300);
 	};
 
@@ -185,7 +176,7 @@ function newBookPreview() {
 			alert('Field(s) can not be empty!!!');
 			return;
 		}
-		saveBookData();
+		saveNewBook();
 	});
 	section.appendChild(container);
 }
@@ -305,7 +296,7 @@ function createFormInput (name, value) {
 
 function checkBookData(data) {
 	const bookFields = [...data];
-	return bookFields.some(elem => elem.defaultValue === '');
+	return bookFields.some(elem => elem.value === '');
 }
 
 function collectBookData() {
@@ -324,9 +315,6 @@ function checkBookId(bookId) {
 function renderStartPage() {
 	const url = window.location.href;
 	window.location.href = url.slice(0, url.indexOf('.html')) + '.html';
-	// const baseURL = url.slice(0, url.indexOf('.html')) + '.html';
-	// window.history.pushState({}, '', baseURL);
-	// window.dispatchEvent(new CustomEvent('popstate'));
 }
 
 function isCorrectURL() {
