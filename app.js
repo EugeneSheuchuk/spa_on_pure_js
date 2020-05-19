@@ -142,10 +142,27 @@ function editBookBlock (book) {
 	container.appendChild(author);
 	container.appendChild(image);
 	container.appendChild(plot);
+
 	const submit = document.createElement('input');
 	submit.setAttribute('type', 'submit');
 	submit.setAttribute('value', 'Save');
 	container.appendChild(submit);
+
+	const cancel = document.createElement('input');
+	cancel.setAttribute('type', 'button');
+	cancel.setAttribute('value', 'Cancel');
+	cancel.addEventListener('click', (e) => {
+		e.preventDefault();
+		const result = confirm('Discard changes?');
+		if (result) {
+			const url = new URL(window.location.href);
+			const newHref = url.href.slice(0, url.href.indexOf('#')) + '#preview';
+			const id = url.searchParams.get("id");
+			window.history.pushState({'id': id, 'action': 'preview'}, '', newHref);
+			window.dispatchEvent(new CustomEvent('popstate', {'detail': {'id': id, 'action': 'preview'}}));
+		}
+	});
+	container.appendChild(cancel);
 
 	const saveBookData = () => {
 		const book = collectBookData();
